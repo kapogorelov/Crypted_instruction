@@ -1,28 +1,31 @@
 # ID посылки: 162458389
 
-def decode(s: str) -> str:
-    str_stack: list[str] = []
-    num_stack: list[int] = []
-    current: str = ""
-    num: str = ""
+import string
 
-    for ch in s:
-        if ch.isdigit():
-            num += ch
-        elif ch == "[":
-            str_stack.append(current)
-            num_stack.append(int(num))
-            current = ""
-            num = ""
-        elif ch == "]":
-            count: int = num_stack.pop()
-            prev: str = str_stack.pop()
-            current = prev + current * count
+DIGITS = set(string.digits)
+
+
+def decode(encoded_string: str) -> str:
+    stack: list[tuple[str, int]] = []
+    current_segment: str = ""
+    repeat_count: str = ""
+
+    for char in encoded_string:
+        if char in DIGITS:
+            repeat_count += char
+        elif char == "[":
+            stack.append((current_segment, int(repeat_count)))
+            current_segment = ""
+            repeat_count = ""
+        elif char == "]":
+            preceding_segment, repeater = stack.pop()
+            current_segment = preceding_segment + current_segment * repeater
         else:
-            current += ch
+            current_segment += char
 
-    return current
+    return current_segment
 
 
-line: str = input()
-print(decode(line))
+if __name__ == "__main__":
+    line: str = input()
+    print(decode(line))
